@@ -39,8 +39,6 @@ function App() {
     try {
       await updateUserPlaces([selectedPlace, ...userPlaces]);
     } catch (error) {
-      console.log('error', error);
-
       updateUserPlaces(userPlaces)
       setErrorUpdatingPlaces({
         message: error.message || "Failed to update places"
@@ -52,9 +50,17 @@ function App() {
     setUserPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
     );
+    try {
+      await updateUserPlaces(userPlaces.filter((place) => place.id !== selectedPlace.current.id));
+    } catch (error) {
+      setUserPlaces(userPlaces)
+      setErrorUpdatingPlaces({
+        message: error.message || "Failed to delete place."
+      });
+    }
 
     setModalIsOpen(false);
-  }, []);
+  }, [userPlaces]);
 
   function handleErrorModalClose() {
     setErrorUpdatingPlaces(null);
